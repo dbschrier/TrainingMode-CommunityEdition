@@ -112,11 +112,11 @@ GeneralTech:
     bl 0x0              # Ledgedash
     bl 0x0              # Wavedash
     bl ComboTraining
-    bl Powershield
-    bl Ledgetech
     bl AttackOnShield
     bl Reversal
     bl SDITraining
+    bl Powershield
+    bl Ledgetech
     bl AmsahTech
     bl ShieldDrop
     bl WaveshineSDI
