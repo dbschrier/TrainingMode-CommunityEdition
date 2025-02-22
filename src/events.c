@@ -340,7 +340,7 @@ static EventMatchData SDI_MatchData = {
 };
 EventDesc SDI = {
     .eventName = "SDI Training\n",
-    .eventDescription = "Use Smash DI to escape\nFox's up-air!",
+    .eventDescription = "Use Smash DI to escape\nFox's up-air, or cheat!",
     .eventFile = 0,
     .CSSType = SLCHRKIND_EVENT,
     .isSelectStage = false,
