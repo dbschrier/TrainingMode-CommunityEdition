@@ -26,6 +26,7 @@ if not exist "C:/devkitPro/devkitPPC" (
     goto cleanup
 ) else (
     echo found devkitPro
+    set "PATH=%PATH%;C:\devkitPro\devkitPPC\bin"
 )
 
 if not exist "TM-CE.iso" (
