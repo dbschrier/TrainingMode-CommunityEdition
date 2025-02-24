@@ -91,7 +91,7 @@ copy "Additional ISO Files\opening.bnr" "build\"
 
 echo BUILD START.DOL --------------------------------------------------------
 
-for /f "delims=" %%A in ('gc_fst get-header "%ISO%"') do set "GAME_ID=%%A"
+for /f "delims=" %%A in ('gc_fst get-header %ISO%') do set "GAME_ID=%%A"
 if "%GAME_ID%" == "GALJ01" (
 	set "PATCH_FILENAME=patch_jp.xdelta"
 ) else (

@@ -119,6 +119,7 @@ Have some specific tech you want to train? Find a bug that's been annoying you? 
 ### Windows
 1. [Install DevKitPro](https://github.com/devkitPro/installer/releases/latest). Install the Gamecube (aka PPC or PowerPC) package.
 2. Drag your legally obtained SSBM v1.02 ISO on to the 'build_windows.bat' file. If all goes well, 'TM-CE.iso' will be created.
+3. If you run into `could not create temporary file whilst copying ...` issues, use powershell instead of cmd.
 
 ### Linux
 1. [Install DevKitPro](https://devkitpro.org/wiki/Getting_Started#Unix-like_platforms). Install the Gamecube (gamecube-dev) package.

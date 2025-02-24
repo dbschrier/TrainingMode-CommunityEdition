@@ -19,13 +19,14 @@ enum fire_speed {
 
 enum laser_height {
     LASER_HEIGHT_RANDOM,
+    LASER_HEIGHT_VERY_LOW,
     LASER_HEIGHT_LOW,
     LASER_HEIGHT_MID,
     LASER_HEIGHT_HIGH,
 };
 
 static char *Options_FireSpeed[] = { "Random", "Slow", "Medium", "Fast" };
-static char *Options_LaserHeight[] = { "Random", "Low", "Mid", "High" };
+static char *Options_LaserHeight[] = { "Random", "Very Low", "Low", "Mid", "High" };
 static char *Options_Direction[] = { "Right", "Left" };
 
 static EventOption Options_Main[] = {
@@ -126,6 +127,9 @@ void Event_Think(GOBJ *menu) {
         if (delay_option == LASER_HEIGHT_RANDOM) {
             falco_shoot_delay = HSD_Randi(4) + 2;
             falco_fastfall_delay = 1;
+        } else if (delay_option == LASER_HEIGHT_VERY_LOW) {
+            falco_shoot_delay = 11;
+            falco_fastfall_delay = 8;
         } else if (delay_option == LASER_HEIGHT_LOW) {
             falco_shoot_delay = 5;
             falco_fastfall_delay = 1;

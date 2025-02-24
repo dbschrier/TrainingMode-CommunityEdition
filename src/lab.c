@@ -4401,6 +4401,29 @@ void Record_LoadSavestate(Savestate *savestate) {
     stc_playback_cancelled_cpu = false;
 
     event_vars->Savestate_Load(savestate, mirror);
+
+    int plys[2] = {0, 1};
+    int chances[2] = {
+        LabOptions_SlotChancesHMN[OPTSLOTCHANCE_PERCENT].option_val,
+        LabOptions_SlotChancesCPU[OPTSLOTCHANCE_PERCENT].option_val,
+    };
+
+    for (int i = 0; i < 2; ++i) {
+        int chance = chances[i];
+        int ply = plys[i];
+        GOBJ *fighter = Fighter_GetGObj(ply);
+        FighterData *fighter_data = fighter->userdata;
+        int percent = fighter_data->dmg.percent;
+
+        if (chance) {
+            int change = HSD_Randi(chance+1);
+            percent += change;
+            if (percent > 999) percent = 999;
+            fighter_data->dmg.percent = percent;
+        }
+
+        Fighter_SetHUDDamage(ply, percent);
+    }
 }
 
 void Snap_CObjThink(GOBJ *gobj)

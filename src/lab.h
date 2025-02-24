@@ -1520,7 +1520,7 @@ static char *LabValues_CPUBehave[] = {"Stand", "Shield", "Crouch", "Jump"};
 static char *LabValues_TDI[] = {"Random", "Inwards", "Outwards", "Custom", "Random Custom", "None"};
 static char *LabValues_ASDI[] = {"Auto", "Away", "Towards", "Left", "Right", "Up", "Down"};
 static char *LabValues_SDIDir[] = {"Random", "Away", "Towards", "Up", "Down", "Left", "Right"};
-static char *LabValues_Tech[] = {"Random", "Neutral", "Away", "Towards", "None"};
+static char *LabValues_Tech[] = {"Random", "In Place", "Away", "Towards", "None"};
 static char *LabValues_Getup[] = {"Random", "Stand", "Away", "Towards", "Attack"};
 static char *LabValues_GrabEscape[] = {"None", "Medium", "High", "Perfect"};
 static char *LabValues_GrabRelease[] = {"Grounded", "Airborn"};
@@ -1940,11 +1940,11 @@ enum slot_chance_menu
     OPTSLOTCHANCE_4,
     OPTSLOTCHANCE_5,
     OPTSLOTCHANCE_6,
-
+    OPTSLOTCHANCE_PERCENT,
     OPTSLOTCHANCE_COUNT
 };
 
-static EventOption LabOptions_SlotChancesHMN[REC_SLOTS] = {
+static EventOption LabOptions_SlotChancesHMN[OPTSLOTCHANCE_COUNT] = {
     {
         .option_kind = OPTKIND_INT,
         .option_name = "Slot 1",
@@ -1999,9 +1999,16 @@ static EventOption LabOptions_SlotChancesHMN[REC_SLOTS] = {
         .disable = 1,
         .onOptionChange = Lab_ChangeSlot6ChanceHMN,
     },
+    {
+        .option_kind = OPTKIND_INT,
+        .option_name = "Random Percent",
+        .desc = "A random percentage up to this value will be\nadded to the character's percentage each load.",
+        .option_values = "%d%%",
+        .value_num = 201,
+    },
 };
 
-static EventOption LabOptions_SlotChancesCPU[REC_SLOTS] = {
+static EventOption LabOptions_SlotChancesCPU[OPTSLOTCHANCE_COUNT] = {
     {
         .option_kind = OPTKIND_INT,
         .option_name = "Slot 1",
@@ -2055,6 +2062,13 @@ static EventOption LabOptions_SlotChancesCPU[REC_SLOTS] = {
         .value_num = 101,
         .disable = 1,
         .onOptionChange = Lab_ChangeSlot6ChanceCPU,
+    },
+    {
+        .option_kind = OPTKIND_INT,
+        .option_name = "Random Percent",
+        .desc = "A random percentage up to this value will be\nadded to the character's percentage each load.",
+        .option_values = "%d%%",
+        .value_num = 201,
     },
 };
 
@@ -2250,14 +2264,14 @@ static EventOption LabOptions_Record[OPTREC_COUNT] = {
     },
     {
         .option_kind = OPTKIND_MENU,
-        .option_name = "Set HMN Playback Chances",
-        .desc = "Set the chances that slots will be selected\nduring random playback.",
+        .option_name = "Set HMN Chances",
+        .desc = "Set various randomization settings for the HMN.",
         .menu = &LabMenu_SlotChancesHMN,
     },
     {
         .option_kind = OPTKIND_MENU,
-        .option_name = "Set CPU Playback Chances",
-        .desc = "Set the chances that slots will be selected\nduring random playback.",
+        .option_name = "Set CPU Chances",
+        .desc = "Set various randomization settings for the CPU.",
         .menu = &LabMenu_SlotChancesCPU,
     },
     {
