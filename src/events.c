@@ -44,7 +44,7 @@ static EventMatchData Lab_MatchData = {
 EventDesc Lab = {
     // Event Name
     .eventName = "Training Lab\n",
-    .eventDescription = "Free practice with\ncomplete control.\n",
+    .eventDescription = "For free practice and creating savestates.\nWorks well with rwing slippi replay takeover.",
     .eventFile = "lab",
     .eventCSSFile = "TM/labCSS.dat",
     .CSSType = SLCHRKIND_TRAINING,
@@ -989,14 +989,14 @@ static EventPage Minigames_Page = {
 // Page 2 Events
 static EventDesc *General_Events[] = {
     &Lab,
-    &LCancel,
     &Ledgedash,
-    &Wavedash,
     &Combo,
+    &Powershield,
+    &Wavedash,
+    &LCancel,
     &AttackOnShield,
     &Reversal,
     &SDI,
-    &Powershield,
     &Ledgetech,
     &AmsahTech,
     &ShieldDrop,
@@ -1005,7 +1005,7 @@ static EventDesc *General_Events[] = {
     &GrabMash,
 };
 static EventPage General_Page = {
-    .name = "General Tech",
+    .name = "Fundamentals",
     (sizeof(General_Events) / 4) - 1,
     General_Events,
 };
