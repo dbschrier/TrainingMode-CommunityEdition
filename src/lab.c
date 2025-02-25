@@ -32,6 +32,9 @@ static u8 stc_null_controller;            // making this static so importing rec
 static int stc_playback_cancelled_hmn = false;
 static int stc_playback_cancelled_cpu = false;
 
+// Computed on random slot counter action start.
+static int stc_rndm_counter_slot = -1;
+
 static u8 stc_tdi_val_num;                // number of custom tdi values set
 static CustomTDI stc_tdi_vals[TDI_HITNUM]; // contains the custom tdi values
 static u8 stc_custom_osd_state_num = 0;
@@ -1260,10 +1263,19 @@ int Lab_CPUPerformAction(GOBJ *cpu, int action_id, GOBJ *hmn)
 
         int frame = eventData->counter_slot_frame;
         if (frame == 0 && !CPUAction_CheckASID(cpu, ASID_ACTIONABLE)) return false; // wait until actionable
-        RecInputData *data = rec_data.cpu_inputs[recSlot-1];
 
-        if (data->start_frame < 0) return true;
-        if (frame >= data->num) {
+        int rec_idx;
+        if (recSlot == RECSLOT_RANDOM) {
+            if (stc_rndm_counter_slot == -1)
+                stc_rndm_counter_slot = Record_GetRandomSlot(&rec_data.cpu_inputs, LabOptions_SlotChancesCPU);
+            rec_idx = stc_rndm_counter_slot;
+        } else {
+            rec_idx = recSlot-1;
+        }
+        RecInputData *data = rec_data.cpu_inputs[rec_idx];
+
+        if (data->start_frame < 0 || frame >= data->num) {
+            stc_rndm_counter_slot = -1;
             eventData->counter_slot_frame = 0;
             return true;
         }
@@ -1389,6 +1401,9 @@ void CPUResetVars(void) {
     eventData->cpu_isactionable = 0;
     eventData->cpu_sdinum = 0;
     eventData->cpu_miss_tech_wait_timer = 0;
+
+    eventData->counter_slot_frame = 0;
+    stc_rndm_counter_slot = -1;
 }
 
 void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
@@ -3296,32 +3311,54 @@ void Inputs_Think(GOBJ *gobj)
         FighterData *ft_data = fighter->userdata;
         HSD_Pad *pad = PadGet(ft_data->pad_index, PADGET_ENGINE);
 
+        float stickX, stickY, substickX, substickY, triggerR, triggerL;
+        int held;
+
+        if (Fighter_GetSlotType(ft_data->ply) == 0) {
+            // show controller inputs
+            stickX = pad->fstickX;
+            stickY = pad->fstickY;
+            substickX = pad->fsubstickX;
+            substickY = pad->fsubstickY;
+            triggerR = pad->ftriggerRight;
+            triggerL = pad->ftriggerLeft;
+            held = pad->held;
+        } else {
+            // show CPU inputs
+            stickX = (float)ft_data->cpu.lstickX / 127.f;
+            stickY = (float)ft_data->cpu.lstickY / 127.f;
+            substickX = (float)ft_data->cpu.cstickX / 127.f;
+            substickY = (float)ft_data->cpu.cstickY / 127.f;
+            triggerR = (float)pad->ftriggerRight / 255.f;
+            triggerL = (float)pad->ftriggerLeft / 255.f;
+            held = ft_data->cpu.held;
+        }
+
         // move lstick
         JOBJ *lstick_joint;
         JOBJ_GetChild(controller_jobj, &lstick_joint, 10, -1);
-        lstick_joint->trans.X = (pad->fstickX * 2.3);
-        lstick_joint->trans.Y = (pad->fstickY * 2.3);
+        lstick_joint->trans.X = stickX * 2.3;
+        lstick_joint->trans.Y = stickY * 2.3;
 
         // move lstick
         JOBJ *rstick_joint;
         JOBJ_GetChild(controller_jobj, &rstick_joint, 8, -1);
-        rstick_joint->trans.X = (pad->fsubstickX * 2.3);
-        rstick_joint->trans.Y = (pad->fsubstickY * 2.3);
+        rstick_joint->trans.X = substickX * 2.3;
+        rstick_joint->trans.Y = substickY * 2.3;
 
         // move ltrigger
         JOBJ *ltrig_joint;
         JOBJ_GetChild(controller_jobj, &ltrig_joint, button_lookup[BTN_L].jobj, -1);
-        ltrig_joint->trans.X = (pad->ftriggerLeft * 0.5) + controller->ltrig_origin.X;
-        ltrig_joint->trans.Z = (pad->ftriggerLeft * 1.5) + controller->ltrig_origin.Y;
+        ltrig_joint->trans.X = triggerL * 0.5 + controller->ltrig_origin.X;
+        ltrig_joint->trans.Z = triggerL * 1.5 + controller->ltrig_origin.Y;
 
         // move rtrigger
         JOBJ *rtrig_joint;
         JOBJ_GetChild(controller_jobj, &rtrig_joint, button_lookup[BTN_R].jobj, -1);
-        rtrig_joint->trans.X = (pad->ftriggerRight * -0.5) + controller->rtrig_origin.X;
-        rtrig_joint->trans.Z = (pad->ftriggerRight *  1.5) + controller->rtrig_origin.Y;
+        rtrig_joint->trans.X = triggerR * -0.5 + controller->rtrig_origin.X;
+        rtrig_joint->trans.Z = triggerR *  1.5 + controller->rtrig_origin.Y;
 
         // update button colors
-        int held = pad->held;
         for (int i = 0; i < BTN_NUM; i++)
         {
             // Get buttons jobj and dobj from the lookup table
