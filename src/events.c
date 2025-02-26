@@ -44,7 +44,7 @@ static EventMatchData Lab_MatchData = {
 EventDesc Lab = {
     // Event Name
     .eventName = "Training Lab\n",
-    .eventDescription = "For free practice and creating savestates.\nWorks well with rwing slippi replay takeover.",
+    .eventDescription = "For free practice, creating savestates,\n Works well with rwing slippi replay takeover.",
     .eventFile = "lab",
     .eventCSSFile = "TM/labCSS.dat",
     .CSSType = SLCHRKIND_TRAINING,

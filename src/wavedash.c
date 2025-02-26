@@ -191,7 +191,6 @@ void Wavedash_Init(WavedashData *event_data)
 }
 void Wavedash_Think(WavedashData *event_data, FighterData *hmn_data)
 {
-
     // check to enter is_wavedashing
     if (event_data->is_wavedashing == 0)
     {
@@ -223,6 +222,9 @@ void Wavedash_Think(WavedashData *event_data, FighterData *hmn_data)
     //OSReport("is_wavedashing: %d since_wavedash: %d", event_data->is_wavedashing, event_data->since_wavedash);
 
     JOBJ *hud_jobj = event_data->hud.gobj->hsd_object;
+
+    //wavedashThreshold a variable that determines the slowest frame that's acceptable in a late wavedash.
+    static int wavedashThreshold = 4;
 
     // start sequence on jump squat
     if ((hmn_data->state_id == ASID_KNEEBEND) && (hmn_data->TM.state_frame == 0))
@@ -288,7 +290,9 @@ void Wavedash_Think(WavedashData *event_data, FighterData *hmn_data)
                 is_finished = 1;
                 mat_anim = event_data->assets->hudmatanim[0];
                 event_data->wd_succeeded++;
+                
 
+                
                 // check for perfect
                 //if (WdOptions_Main[0].option_val == 0)
                 {
@@ -296,10 +300,11 @@ void Wavedash_Think(WavedashData *event_data, FighterData *hmn_data)
                         SFX_Play(303);
                 }
             }
+            
 
-            // look for failed WD
-            else if ((event_data->is_early_airdodge == 1) && (((hmn_data->state_id == ASID_JUMPF) || (hmn_data->state_id == ASID_JUMPB)) && (hmn_data->TM.state_frame >= 10)) ||
-                     ((hmn_data->state_id == ASID_ESCAPEAIR) && (hmn_data->TM.state_frame >= 10) && (hmn_data->TM.state_prev[1] == ASID_KNEEBEND)))
+            // look for failed WD, changed TM.state_frame >= wavedash Threshold as a failed late WD.
+            else if ((event_data->is_early_airdodge == 1) && (((hmn_data->state_id == ASID_JUMPF) || (hmn_data->state_id == ASID_JUMPB)) && (hmn_data->TM.state_frame >= wavedashThreshold)) ||
+                     ((hmn_data->state_id == ASID_ESCAPEAIR) && (hmn_data->TM.state_frame >= wavedashThreshold) && (hmn_data->TM.state_prev[1] == ASID_KNEEBEND)))
             {
                 is_finished = 1;
                 mat_anim = event_data->assets->hudmatanim[1];
@@ -422,6 +427,13 @@ void Wavedash_Think(WavedashData *event_data, FighterData *hmn_data)
                 int successful = event_data->wd_succeeded;
                 float succession = ((float)event_data->wd_succeeded / (float)event_data->wd_attempted) * 100.0;
                 Text_SetText(event_data->hud.text_succession, 0, "%d (%.2f%)", successful, succession);
+                 
+
+                //Variable adjustment to wavedashThreshold (3f -> 2f) depending on success rate over X attempts.
+                {
+                    if (succession >= 70.0 && event_data->wd_attempted == 10)
+                        wavedashThreshold = 2;
+                }
 
                 // hide tip so bar is unobscured
                 //event_vars->Tip_Destroy();
