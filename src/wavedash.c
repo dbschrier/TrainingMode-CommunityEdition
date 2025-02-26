@@ -839,7 +839,7 @@ int Target_CheckArea(WavedashData *event_data, int line, Vec3 *pos, float x_offs
 }
 
 // Tips
-Tips_Think(WavedashData *event_data, FighterData *hmn_data)
+Tips_Think(WavedashData *event_data, FighterData *hmn_data, int wavedashThreshold)
 {
 
     // only if enabled
@@ -862,6 +862,12 @@ Tips_Think(WavedashData *event_data, FighterData *hmn_data)
                     event_data->tip.shield_num = 0;
                 }
             }
+        }
+        static int wavedashTipDisplayed = 0;
+        if (event_data->wd_attempted == 10 && !wavedashTipDisplayed)
+        {
+            event_vars->Tip_Display(1 * 60, "Tip:\nTime to speed-up your wavedashes!\nAim for around 1f Late for consistency!");
+            wavedashTipDisplayed = 1;
         }
     }
 
